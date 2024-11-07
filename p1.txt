@@ -1,0 +1,82 @@
+import tensorflow as tf
+from tensorflow import keras
+import matplotlib.pyplot as plt
+import random
+
+
+
+
+Load training and testing data using mnist
+
+mnist = tf.keras.datasets.mnist
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+
+x_train = x_train / 255
+x_test = x_test / 255
+
+
+
+
+
+checking the size of img
+x_train = x_train[0]
+img_len, img_width = x_train.shape
+print(f"img_len: {img_len}, img_width: {img_width}")
+
+
+
+**DEFINE NETWORK ARCHITECTURE USING KERAS**
+model = keras.Sequential([
+    keras.layers.Flatten(input_shape=(28,28)),
+    keras.layers.Dense(128, activation = "relu"),
+    keras.layers.Dense(10, activation = "softmax")
+])
+model.summary()
+
+
+
+
+**Train the model using sgd**
+model.compile(optimizer = "sgd",
+              loss = "sparse_categorical_crossentropy",
+              metrics = ['accuracy'])
+history = model.fit(x_train, y_train,validation_data = (x_test,y_test), epochs = 10)
+
+
+
+
+**EVALUATE THE NETWORK**
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print("loss = %.3f" %test_loss)
+print("accuracy = %.3f" %test_acc)
+n = random.randint(0, 9999)
+plt.imshow(x_test[n])
+plt.show()
+Predicted_value = model.predict(x_test)
+plt.imshow(x_test[n])
+plt.show()
+
+
+
+
+
+
+**Plot the Training Loss and Accuracy**
+**Trainig Accuracy**
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.title("Model Accuracy")
+plt.ylabel("Accuracy")
+plt.xlabel("epochs")
+plt.legend(["Train", "Validation"], loc = "upper left")
+plt.show()
+
+
+**Training Loss**
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title("Model Loss")
+plt.ylabel("Loss")
+plt.xlabel("epochs")
+plt.legend(["Train", "Validation"], loc = "upper left")
+plt.show()
